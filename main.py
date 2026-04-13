@@ -10,16 +10,27 @@ from routers import auth_router
 
 from contextlib import asynccontextmanager
 from seed_data import seed
+import os
 
 
 # ✅ Lifespan (modern startup)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🚀 App starting...")
+
     # 🗄️ Create DB tables
     Base.metadata.create_all(bind=engine)
-    seed()
+    print("✅ Tables ensured")
+
+    # 🎯 Controlled seeding
+    if os.getenv("SEED_DB") == "true":
+        print("🌱 Seeding enabled...")
+        seed()
+    else:
+        print("⏭️ Seeding skipped")
+
     yield
+
     print("🛑 App shutting down...")
 
 
