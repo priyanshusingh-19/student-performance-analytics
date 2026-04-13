@@ -8,13 +8,28 @@ from routers import marks_router
 from routers import analytics_router
 from routers import auth_router
 
-# 🚀 CREATE APP FIRST (IMPORTANT)
+from contextlib import asynccontextmanager
+from seed_data import seed
+
+
+# ✅ Lifespan (modern startup)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("🚀 App starting...")
+    seed()
+    yield
+    print("🛑 App shutting down...")
+
+
+# ✅ CREATE APP ONLY ONCE
 app = FastAPI(
     title="Student Performance Analytics API",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
-# 🌐 CORS (AFTER app creation)
+
+# 🌐 CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,16 +38,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # 🗄️ Create DB tables
 Base.metadata.create_all(bind=engine)
 
-# 🔗 Include routers
+
+# 🔗 Routers
 app.include_router(student_router.router)
 app.include_router(subject_router.router)
 app.include_router(marks_router.router)
 app.include_router(analytics_router.router)
 app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
 
+
+# 🏠 Root route
 @app.get("/")
 def home():
     return {
