@@ -30,11 +30,11 @@ def get_db():
 def create_marks(mark: MarksCreate, db: Session = Depends(get_db)):
 
     # Validation
-    if mark.internal < 0 or mark.external < 0:
+    if mark.internal < 0 or mark.external_marks < 0:
         raise HTTPException(status_code=400, detail="Marks cannot be negative")
 
-    if mark.internal > 40 or mark.external > 60:
-        raise HTTPException(status_code=400, detail="Internal max 40 and External max 60 allowed")
+    if mark.internal > 40 or mark.external_marks > 60:
+        raise HTTPException(status_code=400, detail="Internal max 40 and external_marks max 60 allowed")
 
     # Duplicate check
     existing = db.query(Marks).filter(
@@ -48,13 +48,13 @@ def create_marks(mark: MarksCreate, db: Session = Depends(get_db)):
             detail="Marks already exist for this student and subject"
         )
 
-    total_marks = mark.internal + mark.external
+    total_marks = mark.internal + mark.external_marks
 
     db_mark = Marks(
         student_id=mark.student_id,
         subject_id=mark.subject_id,
         internal=mark.internal,
-        external=mark.external,
+        external_marks=mark.external_marks,
         total=total_marks
     )
 
@@ -97,15 +97,15 @@ def update_marks(mark_id: int, updated_mark: MarksCreate, db: Session = Depends(
     if not db_mark:
         raise HTTPException(status_code=404, detail="Marks not found")
 
-    if updated_mark.internal < 0 or updated_mark.external < 0:
+    if updated_mark.internal < 0 or updated_mark.external_marks < 0:
         raise HTTPException(status_code=400, detail="Marks cannot be negative")
 
-    if updated_mark.internal > 40 or updated_mark.external > 60:
-        raise HTTPException(status_code=400, detail="Internal max 40 and External max 60 allowed")
+    if updated_mark.internal > 40 or updated_mark.external_marks > 60:
+        raise HTTPException(status_code=400, detail="Internal max 40 and external_marks max 60 allowed")
 
     db_mark.internal = updated_mark.internal
-    db_mark.external = updated_mark.external
-    db_mark.total = updated_mark.internal + updated_mark.external
+    db_mark.external_marks = updated_mark.external_marks
+    db_mark.total = updated_mark.internal + updated_mark.external_marks
 
     db.commit()
     db.refresh(db_mark)

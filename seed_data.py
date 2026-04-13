@@ -87,32 +87,32 @@ for student in students:
 
         if student_type == 0:  # Topper
             internal = random.randint(32, 40)
-            external = random.randint(52, 60)
+            external_marks = random.randint(52, 60)
 
         elif student_type == 1:  # Average
             internal = random.randint(25, 35)
-            external = random.randint(45, 55)
+            external_marks = random.randint(45, 55)
 
         elif student_type == 2:  # Weak
             internal = random.randint(20, 28)
-            external = random.randint(40, 48)
+            external_marks = random.randint(40, 48)
 
         else:  # Risk / failing
             internal = random.randint(10, 25)
-            external = random.randint(30, 45)
+            external_marks = random.randint(30, 45)
 
         # 🔥 Random failure injection
         if random.random() < 0.15:
             internal = random.randint(5, 15)
-            external = random.randint(20, 35)
+            external_marks = random.randint(20, 35)
 
-        total = internal + external
+        total = internal + external_marks
 
         mark = Marks(
             student_id=student.student_id,
             subject_id=subject.subject_id,
             internal=internal,
-            external=external,
+            external_marks=external_marks,
             total=total
         )
 
