@@ -4,6 +4,7 @@ from models.subject import Subject
 from models.marks import Marks
 from models.user import User
 from auth.auth_utils import hash_password
+from sqlalchemy import text
 import random
 
 
@@ -14,19 +15,26 @@ def seed():
         print("🌱 STARTING SEED PROCESS")
 
         # -------------------------------
-        # 🔥 CLEAN OLD DATA (FORCE RESET)
+        # 🔥 CLEAN OLD DATA (TRUNCATE)
         # -------------------------------
-        print("STEP 1: Deleting old data...")
-        db.query(Marks).delete()
-        db.query(Student).delete()
-        db.query(Subject).delete()
-        db.query(User).delete()
+        print("STEP 1: Truncating all tables...")
+
+        db.execute(text("SET FOREIGN_KEY_CHECKS=0"))
+
+        db.execute(text("TRUNCATE TABLE marks"))
+        db.execute(text("TRUNCATE TABLE students"))
+        db.execute(text("TRUNCATE TABLE subjects"))
+        db.execute(text("TRUNCATE TABLE users"))
+
+        db.execute(text("SET FOREIGN_KEY_CHECKS=1"))
+
         db.commit()
 
         # -------------------------------
         # 👤 USERS
         # -------------------------------
         print("STEP 2: Adding users...")
+
         admin = User(
             username="admin",
             hashed_password=hash_password("admin123"),
@@ -46,6 +54,7 @@ def seed():
         # 🎓 SUBJECTS
         # -------------------------------
         print("STEP 3: Adding subjects...")
+
         subjects = [
             Subject(subject_name="Maths", credits=4, semester=6),
             Subject(subject_name="DBMS", credits=3, semester=6),
@@ -59,6 +68,7 @@ def seed():
         # 👨‍🎓 STUDENTS
         # -------------------------------
         print("STEP 4: Adding students...")
+
         students = [
             Student(name="Priyanshu", branch="CSE", semester=6, email="s1@test.com"),
             Student(name="Rahul", branch="IT", semester=5, email="s2@test.com"),
@@ -103,6 +113,7 @@ def seed():
                     internal = random.randint(10, 25)
                     external_marks = random.randint(30, 45)
 
+                # Random failure injection
                 if random.random() < 0.15:
                     internal = random.randint(5, 15)
                     external_marks = random.randint(20, 35)
