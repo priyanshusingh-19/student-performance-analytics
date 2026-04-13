@@ -32,3 +32,9 @@ app.include_router(subject_router.router)
 app.include_router(marks_router.router)
 app.include_router(analytics_router.router)
 app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
+
+@app.get("/")
+def home():
+    return {
+        "message": "Student Performance Analytics API is running 🚀"
+    }
