@@ -8,7 +8,7 @@ class Marks(Base):
     student_id = Column(Integer, ForeignKey("students.student_id"), nullable=False, index=True)
     subject_id = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False, index=True)
     internal = Column(Integer, nullable=False)
-    external_marks_marks = Column(Integer, nullable=False)
+    external_marks = Column(Integer, nullable=False)
     total = Column(Integer, nullable=False)
 
     __table_args__ = (

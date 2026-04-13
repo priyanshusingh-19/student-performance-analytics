@@ -16,6 +16,8 @@ from seed_data import seed
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🚀 App starting...")
+    # 🗄️ Create DB tables
+    Base.metadata.create_all(bind=engine)
     seed()
     yield
     print("🛑 App shutting down...")
@@ -37,10 +39,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# 🗄️ Create DB tables
-Base.metadata.create_all(bind=engine)
 
 
 # 🔗 Routers

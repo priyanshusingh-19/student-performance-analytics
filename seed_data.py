@@ -11,16 +11,22 @@ def seed():
     db = SessionLocal()
 
     try:
-        # ✅ Prevent duplicate seeding
-        if db.query(Student).first():
-            print("✅ Data already exists. Skipping seeding.")
-            return
-
-        print("🌱 Seeding database...")
+        print("🌱 STARTING SEED PROCESS")
 
         # -------------------------------
-        # 👤 USERS (AUTH)
+        # 🔥 CLEAN OLD DATA (FORCE RESET)
         # -------------------------------
+        print("STEP 1: Deleting old data...")
+        db.query(Marks).delete()
+        db.query(Student).delete()
+        db.query(Subject).delete()
+        db.query(User).delete()
+        db.commit()
+
+        # -------------------------------
+        # 👤 USERS
+        # -------------------------------
+        print("STEP 2: Adding users...")
         admin = User(
             username="admin",
             hashed_password=hash_password("admin123"),
@@ -39,6 +45,7 @@ def seed():
         # -------------------------------
         # 🎓 SUBJECTS
         # -------------------------------
+        print("STEP 3: Adding subjects...")
         subjects = [
             Subject(subject_name="Maths", credits=4, semester=6),
             Subject(subject_name="DBMS", credits=3, semester=6),
@@ -49,8 +56,9 @@ def seed():
         db.commit()
 
         # -------------------------------
-        # 👨‍🎓 STUDENTS (10 DATA)
+        # 👨‍🎓 STUDENTS
         # -------------------------------
+        print("STEP 4: Adding students...")
         students = [
             Student(name="Priyanshu", branch="CSE", semester=6, email="s1@test.com"),
             Student(name="Rahul", branch="IT", semester=5, email="s2@test.com"),
@@ -70,6 +78,8 @@ def seed():
         # -------------------------------
         # 📊 MARKS
         # -------------------------------
+        print("STEP 5: Adding marks...")
+
         students = db.query(Student).all()
         subjects = db.query(Subject).all()
 
@@ -80,23 +90,19 @@ def seed():
 
                 student_type = student.student_id % 4
 
-                if student_type == 0:  # Topper
+                if student_type == 0:
                     internal = random.randint(32, 40)
                     external_marks = random.randint(52, 60)
-
-                elif student_type == 1:  # Average
+                elif student_type == 1:
                     internal = random.randint(25, 35)
                     external_marks = random.randint(45, 55)
-
-                elif student_type == 2:  # Weak
+                elif student_type == 2:
                     internal = random.randint(20, 28)
                     external_marks = random.randint(40, 48)
-
-                else:  # Risk
+                else:
                     internal = random.randint(10, 25)
                     external_marks = random.randint(30, 45)
 
-                # random failure
                 if random.random() < 0.15:
                     internal = random.randint(5, 15)
                     external_marks = random.randint(20, 35)
@@ -116,10 +122,10 @@ def seed():
         db.add_all(marks_list)
         db.commit()
 
-        print("🔥 Database seeded successfully!")
+        print("🔥 SEED COMPLETED SUCCESSFULLY")
 
     except Exception as e:
-        print("❌ Seeding failed:", str(e))
+        print("❌ SEED FAILED:", str(e))
         db.rollback()
 
     finally:
